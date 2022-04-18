@@ -39,17 +39,17 @@ extract:
     names: ["SCDA"]
 
 index:
-  query_fea_dir: "/data/features/best_features/cub/query"
-  gallery_fea_dir: "/data/features/best_features/cub/gallery"
+  query_fea_dir: "/pyretri-image-small/features/best_features/cub/query"
+  gallery_fea_dir: "/pyretri-image-small/features/best_features/cub/gallery"
 
   feature_names: ["pool5_SCDA"]
 
   dim_processors:
     names: ["L2Normalize", "PCA", "L2Normalize"]
     PCA:
-      proj_dim: 512
+      proj_dim: 31
       whiten: False
-      train_fea_dir: "/data/features/best_features/cub/gallery"
+      train_fea_dir: "/pyretri-image-small/features/best_features/cub/gallery"
       l2: True
 
   feature_enhancer:

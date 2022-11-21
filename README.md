@@ -3,7 +3,7 @@
     <img src='teaser_image/logo.jpg'>
 </p>
 
-# PyRetri
+# PyRetri - Tez
 
 Benyi Hu, Ren-Jie Song, Xiu-Shen Wei*, Yazhou Yao, Xian-Sheng Hua, Yuehu Liu
 

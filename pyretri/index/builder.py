@@ -6,6 +6,7 @@ from .registry import ENHANCERS, METRICS, DIMPROCESSORS, RERANKERS
 from .feature_enhancer import EnhanceBase
 from .helper import IndexHelper
 from .metric import MetricBase
+from .metric2 import Metric2Base
 from .dim_processor import DimProcessorBase
 from .re_ranker import ReRankerBase
 
@@ -43,6 +44,19 @@ def build_metric(cfg: CfgNode) -> MetricBase:
     metric = simple_build(name, cfg, METRICS)
     return metric
 
+def build_metric2(cfg: CfgNode) -> Metric2Base:
+    """
+    Instantiate a metric class.
+
+    Args:
+        cfg (CfgNode): the configuration tree.
+
+    Returns:
+        metric2 (Metric2Base): an instance of metric2 class.
+    """
+    name = cfg["name"]
+    metric2 = simple_build(name, cfg, METRICS)
+    return metric2
 
 def build_processors(feature_names: List[str], cfg: CfgNode) -> DimProcessorBase:
     """
@@ -88,7 +102,8 @@ def build_index_helper(cfg: CfgNode) -> IndexHelper:
     """
     dim_processors = build_processors(cfg["feature_names"], cfg.dim_processors)
     metric = build_metric(cfg.metric)
+    metric2 = build_metric2(cfg.metric2)
     feature_enhancer = build_enhance(cfg.feature_enhancer)
     re_ranker = build_ranker(cfg.re_ranker)
-    helper = IndexHelper(dim_processors, feature_enhancer, metric, re_ranker)
+    helper = IndexHelper(dim_processors, feature_enhancer, metric, metric2, re_ranker)
     return helper

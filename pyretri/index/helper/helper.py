@@ -3,15 +3,23 @@
 import os
 import shutil
 
+import numpy
 import torch
 
 import numpy as np
+import itertools
+import vptree
 
 from ..dim_processor import DimProcessorBase
 from ..feature_enhancer import EnhanceBase
 from ..metric import MetricBase
+from ..metric2 import Metric2Base
 from ..re_ranker import ReRankerBase
 from ..utils import feature_loader
+from scipy.spatial.distance import cityblock
+from scipy.spatial.distance import minkowski
+from scipy.spatial.distance import chebyshev
+from scipy.spatial.distance import cosine
 
 import matplotlib.pyplot as plt
 
@@ -27,6 +35,7 @@ class IndexHelper:
             dim_processors: List[DimProcessorBase],
             feature_enhancer: EnhanceBase,
             metric: MetricBase,
+            metric2: Metric2Base,
             re_ranker: ReRankerBase,
     ):
         """
@@ -34,11 +43,13 @@ class IndexHelper:
             dim_processors (list):
             feature_enhancer (EnhanceBase):
             metric (MetricBase):
+            metric2 (Metric2Base):
             re_ranker (ReRankerBase):
         """
         self.dim_procs = dim_processors
         self.feature_enhance = feature_enhancer
         self.metric = metric
+        self.metric2 = metric2
         self.re_rank = re_ranker
 
     def show_topk_retrieved_images(self, single_query_info: Dict, topk: int, gallery_info: List[Dict]) -> None:
@@ -91,6 +102,12 @@ class IndexHelper:
         for dim_proc in self.dim_procs:
             query_fea, gallery_fea = dim_proc(query_fea), dim_proc(gallery_fea)
 
+        dis2, sorted_index2 = self.metric2(query_fea, gallery_fea)
+
+        #print("# VP-TREE")
+        #print("# dis: ", dis2)
+        #print("# sorted_index: ", sorted_index2)
+
         query_fea, gallery_fea = torch.Tensor(query_fea), torch.Tensor(gallery_fea)
         # if torch.cuda.is_available():
         #     query_fea = query_fea.cuda()
@@ -100,8 +117,23 @@ class IndexHelper:
 
         dis, sorted_index = self.metric(query_fea, gallery_fea)
 
-        sorted_index = self.re_rank(query_fea, gallery_fea, dis=dis, sorted_index=sorted_index)
+        #print("# KNN")
+        #print("# dis: ", dis)
+        #print("# sorted_index: ", sorted_index)
+
+        #print("---------------")
+        #print("# Metric Result")
+        #print("sorted_index: ", sorted_index)
+
+        #sorted_index = self.re_rank(query_fea, gallery_fea, dis=dis, sorted_index=sorted_index)
+        sorted_index2 = self.re_rank(query_fea, gallery_fea, dis=dis2, sorted_index=sorted_index2)
+        #print("# Re_rank Result")
+        #sorted_index_elements = itertools.islice(sorted_index[0], 10)
+        #print("Jaccard sorted_index: ", list(sorted_index_elements))
         for i, info in enumerate(query_info):
             info["ranked_neighbors_idx"] = sorted_index[i].tolist()
+            #info["ranked_neighbors_idx2"] = sorted_index2[i]
+            info["ranked_neighbors_idx2"] = sorted_index2[i].tolist()
 
+        #print("# query_info: ", query_info)
         return query_info, query_fea, gallery_fea

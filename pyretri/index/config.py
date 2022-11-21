@@ -39,5 +39,6 @@ def get_index_cfg() -> CfgNode:
     cfg["dim_processors"] = get_processors_cfg()
     cfg["feature_enhancer"] = get_enhancer_cfg()
     cfg["metric"] = get_metric_cfg()
+    cfg["metric2"] = get_metric_cfg()
     cfg["re_ranker"] = get_ranker_cfg()
     return cfg

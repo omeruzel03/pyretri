@@ -32,7 +32,7 @@ def main():
     cfg = setup_cfg(cfg, args.config_file, args.opts)
 
     # set path for single image
-    path = '/pyretri-image-small/CUB_200_2011/query/Random/Least_Auklet_0039_795081.jpg'
+    path = '/pyretri-image-corel-test/COREL1/query/Random/113000.jpg'
 
     # build transformers
     transformers = build_transformers(cfg.datasets.transformers)
@@ -55,12 +55,13 @@ def main():
 
     # load gallery features
     gallery_fea, gallery_info, _ = feature_loader.load(cfg.index.gallery_fea_dir, cfg.index.feature_names)
+    print('gallery_info: ', gallery_info)
 
     # build helper and single index feature
     index_helper = build_index_helper(cfg.index)
     index_result_info, query_fea, gallery_fea = index_helper.do_index(img_fea, img_fea_info, gallery_fea)
 
-    index_helper.save_topk_retrieved_images('/pyretri-image-small/retrieved_images/', index_result_info[0], 5, gallery_info)
+    index_helper.save_topk_retrieved_images('/pyretri-image-corel-test/retrieved_images/', index_result_info[0], 5, gallery_info)
 
     print('single index have done!')
 

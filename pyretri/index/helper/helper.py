@@ -125,7 +125,7 @@ class IndexHelper:
         #print("# Metric Result")
         #print("sorted_index: ", sorted_index)
 
-        #sorted_index = self.re_rank(query_fea, gallery_fea, dis=dis, sorted_index=sorted_index)
+        sorted_index = self.re_rank(query_fea, gallery_fea, dis=dis, sorted_index=sorted_index)
         sorted_index2 = self.re_rank(query_fea, gallery_fea, dis=dis2, sorted_index=sorted_index2)
         #print("# Re_rank Result")
         #sorted_index_elements = itertools.islice(sorted_index[0], 10)

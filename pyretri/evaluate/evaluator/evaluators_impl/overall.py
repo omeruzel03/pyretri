@@ -19,7 +19,7 @@ class OverAll(EvaluatorBase):
         recall_k (sequence): positions of recalls to be calculated.
     """
     default_hyper_params = {
-        "recall_k": [1, 2, 4, 8],
+        "recall_k": [1, 2, 4, 8, 10, 15, 20, 30, 40],
     }
 
     def __init__(self, hps: Dict or None = None):
@@ -116,10 +116,6 @@ class OverAll(EvaluatorBase):
         #print("np.mean(aps): ", np.mean(aps))
         mAP = np.mean(aps) * 100
         mAP2 = np.mean(aps2) * 100
-        print("mAP: ", mAP)
-        print("np.mean(aps): ", np.mean(aps))
-        print("mAP2: ", mAP2)
-        print("np.mean(aps2): ", np.mean(aps2))
 
         for k in recall_at_k:
             recall_at_k[k] = recall_at_k[k] * 100 / len(query_result)

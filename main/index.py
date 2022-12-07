@@ -54,11 +54,11 @@ def main():
 
     # show results
     print("")
-    print("---------------------- KNN ----------------------")
+    print("----------------- KNN + Jaccard -----------------")
     evaluate_helper.show_results(mAP, recall_at_k)
 
     print("")
-    print("---------------- VP-Tree Euclidean --------------")
+    print("----------- VP-Tree Euclidean + Jaccard ---------")
     #print("---------------- VP-Tree Manhattan --------------")
     #print("---------------- VP-Tree Minkowski --------------")
     #print("---------------- VP-Tree Chebyshev --------------")

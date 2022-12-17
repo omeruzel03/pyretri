@@ -6,6 +6,7 @@ from ..evaluators_base import EvaluatorBase
 from ...registry import EVALUATORS
 
 from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_auc_score
 
 from typing import Dict, List
 
@@ -61,45 +62,33 @@ class OverAll(EvaluatorBase):
         aps = list()
         aps2 = list()
 
-        #print("query_result: ", query_result)
-        #print("gallery_info: ", gallery_info)
+        apsAuc = list()
+        apsAuc2 = list()
 
         # For mAP calculation
         pseudo_score = np.arange(0, len(gallery_info))[::-1]
-        #print("pseudo_score: ", pseudo_score)
 
         recall_at_k = dict()
         recall_at_k2 = dict()
         for k in self._hyper_params["recall_k"]:
             recall_at_k[k] = 0
             recall_at_k2[k] = 0
-        #print("recall_at_k: ", recall_at_k)
 
         gallery_label = np.array([gallery_info[idx]["label_idx"] for idx in range(len(gallery_info))])
-        #print("gallery_label: ", gallery_label)
-        #print("range(len(query_result)): ", range(len(query_result)))
         for i in range(len(query_result)):
             ranked_idx = query_result[i]["ranked_neighbors_idx"]
             ranked_idx2 = query_result[i]["ranked_neighbors_idx2"]
-            #if i == 0:
-                #print("ranked_idx: ", ranked_idx)
 
             gt = (gallery_label[query_result[i]["ranked_neighbors_idx"]] == query_result[i]["label_idx"])
             gt2 = (gallery_label[query_result[i]["ranked_neighbors_idx2"]] == query_result[i]["label_idx"])
-            #if i == 0:
-                #print("gallery_label[query_result[i][ranked_neighbors_idx]]: ", gallery_label[query_result[i]["ranked_neighbors_idx"]])
-                #print("query_result[i][label_idx]: ", query_result[i]["label_idx"])
-                #print("gt: ", gt)
 
             aps.append(average_precision_score(gt, pseudo_score[:len(gt)]))
             aps2.append(average_precision_score(gt2, pseudo_score[:len(gt2)]))
 
-            #if i == 0:
-                #print("average_precision_score: ", average_precision_score(gt, pseudo_score[:len(gt)]))
+            apsAuc.append(roc_auc_score(gt, pseudo_score[:len(gt)]))
+            apsAuc2.append(roc_auc_score(gt2, pseudo_score[:len(gt2)]))
 
             # deal with 'gallery as query' test
-            #if i == 0:
-                #print("gallery as query: ", gallery_info[ranked_idx[0]]["path"] == query_result[i]["path"])
             if gallery_info[ranked_idx[0]]["path"] == query_result[i]["path"]:
                 gt.pop(0)
 
@@ -108,21 +97,18 @@ class OverAll(EvaluatorBase):
 
             self.compute_recall_at_k(gt, recall_at_k)
             self.compute_recall_at_k(gt2, recall_at_k2)
-            #if i == 0:
-                #print("compute gt: ", gt)
-                #print("compute recall_at_k: ", recall_at_k)
 
-        #print("aps: ", aps)
-        #print("np.mean(aps): ", np.mean(aps))
         mAP = np.mean(aps) * 100
         mAP2 = np.mean(aps2) * 100
 
+        auc = np.mean(apsAuc)
+        auc2 = np.mean(apsAuc2)
+
         for k in recall_at_k:
             recall_at_k[k] = recall_at_k[k] * 100 / len(query_result)
-        #print("result recall_at_k: ", recall_at_k)
 
         for k in recall_at_k2:
             recall_at_k2[k] = recall_at_k2[k] * 100 / len(query_result)
 
-        return mAP, mAP2, recall_at_k, recall_at_k2
+        return mAP, mAP2, recall_at_k, recall_at_k2, auc, auc2
         #return mAP, recall_at_k

@@ -49,13 +49,13 @@ def main():
 
     # build helper and evaluate results
     evaluate_helper = build_evaluate_helper(cfg.evaluate)
-    mAP, mAP2, recall_at_k, recall_at_k2 = evaluate_helper.do_eval(index_result_info, gallery_info)
+    mAP, mAP2, recall_at_k, recall_at_k2, auc, auc2 = evaluate_helper.do_eval(index_result_info, gallery_info)
     #mAP, recall_at_k = evaluate_helper.do_eval(index_result_info, gallery_info)
 
     # show results
     print("")
     print("----------------- KNN + Jaccard -----------------")
-    evaluate_helper.show_results(mAP, recall_at_k)
+    evaluate_helper.show_results(mAP, recall_at_k, auc)
 
     print("")
     print("----------- VP-Tree Euclidean + Jaccard ---------")
@@ -65,7 +65,7 @@ def main():
     #print("------------------ VP-Tree Cosine ---------------")
     #print("------------------ VP-Tree Canberra ---------------")
     #print("------------------ VP-Tree Braycurtis ---------------")
-    evaluate_helper.show_results(mAP2, recall_at_k2)
+    evaluate_helper.show_results(mAP2, recall_at_k2, auc2)
 
 
 if __name__ == '__main__':
